@@ -1,0 +1,51 @@
+有限人工金标准评测接口（工程 v0.1；科学规则 v0.5）
+
+入口
+  taxonomy.load_taxonomy(path) -> Taxonomy
+  taxonomy.resolve_abbreviation(abbreviation, paper_id=..., scope_id=..., definitions=...)
+  evaluation.compare_reviewed_items(expected, actual, semantic_judgments=(),
+      paper_roles=(), paper_scopes=(), versions={}) -> EvaluationReport
+所有输入为独立Pydantic模型，不依赖抽取domain模块；调用方显式将其记录映射为ReviewItem。
+
+分类边界
+taxonomy四轴为chemistry、form、role、origin；整体系允许多个组分和多标签。
+resolve_term只查询受控标签/ID，不是从材料原名自动判断化学身份。未知值保留原文，不强归MOF/生物质。
+扩充词典用Taxonomy.extended并指定新版本。标签存在和结构校验通过不代表分类科学正确。
+缩写仅在有来源的同一paper_id+scope_id定义下消歧；MB、PS不内置全球含义，多个定义冲突返回ambiguous。
+
+金标准与范围
+expected必须来自已完成的原文核查，而非模型自评。ReviewKey包含paper、material、experiment、metric、target、time_window，另含stream/catalyst/oxidant。
+同数字但材料/实验/时间/采样相/试剂绑定错误不计正确。跨论文不匹配；同篇多个样品不是多个独立论文样本。
+默认ReviewScope.coverage=selected_items：只审expected这些记录，范围外输出列入unscored_actual_keys，不自动判错或判对。
+只有从原文反查、形成完整目标清单的论文才能声明complete_paper；此时无金标准对应的额外输出计为FP。
+若只抽查模型已输出的几条而未反查遗漏，不能声称评到了整篇召回率。
+expected中的unread/not_obtained/read_not_quantified不进入已核查分母；即使actual输出了值也列未评分，不假作真负例。
+not_reported、not_applicable、ambiguous、source_conflict、inferred、rejected保留独立状态分布。
+reported必须有标量值；inferred不进入已报告事实值的正确计数。重复完整key直接报错，避免静默选高值或重复增分。
+
+输出指标
+per_paper与counts分别提供material_identity、target_identity、experimental_binding、field_status、value_unit_exact、value_unit_human_semantic、evidence_locator_overlap的TP/FP/FN、P/R/F1。
+无分母时为null，不将空输出或全未知记为100%。missing_keys、extra_keys、unscored_actual_keys和unreviewed_gold_keys另外列出。
+identity按论文内唯一ID评估，不证明材料规范名本身的化学正确性；规范名需要事前人工映射或另建字段核查记录。
+value_unit_exact保守比较原标量JSON表示和单位，不执行未登记换算、四舍五入或模糊匹配。
+value_unit_human_semantic是精确匹配加显式人工等价裁决的版本；没有人工裁决时与exact相同，不表示已逐项人工复审。
+evidence_locator_overlap仅检查每条记录是否有与金标准相交的source_id+locator，既不打开文件也不判断原文语义；应结合独立定位校验及evidence_support裁决。
+
+语义裁决
+ReviewJudgment.for_items记录完整key、双方内容指纹、aspect(value_unit/evidence_support)、accepted/rejected/uncertain、reviewer_kind、reviewer_id、理由、时间。
+model_judge须带judge_version，统计与human分开；模型一致不改人工语义得分。
+内容改变造成指纹变化必须重新裁决；错实验不能用“语义相近”修补；冲突裁决要求调用方先明确裁定，不能投票或后写覆盖。
+human evidence_support结果单列，位置相同不自动覆盖其否定结论。judgment_counts不伪装为有完整分母的语义准确率。
+
+角色历史与版本
+PaperRoleHistory完整保存按时间排列的RoleEvent。任何development/calibration/expanded_calibration经历、作为background阅读全文或used_for_rule_revision=True都会使该篇失去独立验证资格，随后改名heldout也不能恢复。exposure区分none/metadata/abstract/fulltext，单纯题名摘要筛选不等于全文进入开发；若摘要已用于修订规则仍须记录used_for_rule_revision。
+留出后仅用于验收不自动转开发；若根据该篇结果改了规则，应追加转开发事件，新版需另用未参与开发文献。
+eligible_for_independent_summary要求有已评分金标准、全部已评分论文角色合格，以及rules/taxonomy/schema/prompt/model/parser/code版本齐全。该标志仅检查输入声明的必要条件，不能证明历史记录真实或样本具有代表性。
+报告无全库准确率和自动通过门槛。4—6篇目的性/随机混合人工验收只能报告该样本与抽取范围内结果；不能根据F1推断393篇科学准确率。
+
+方法依据
+NERRE: https://doi.org/10.1038/s41467-024-45563-x （对象归属参与判分）
+ChatExtract: https://doi.org/10.1038/s41467-024-45914-8 （核查与负例；本模块不调用模型）
+可靠性研究: https://doi.org/10.18653/v1/2024.findings-acl.897 （反向查漏、解析/归属错误分层）
+对应本地研究记录：outputs/methods_research_20261111/Codex文献阅读与抽取_案例学习及迁移建议_20261111.txt
+所有测试使用合成标识和数据，不含真实论文答案分支。

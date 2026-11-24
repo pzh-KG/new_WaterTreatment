@@ -1,0 +1,44 @@
+WaterTreatment 0.1.0 基础版本交付记录
+日期：2026-11-11
+
+实施方式
+在 D:\new_WaterTreatment 建立独立新工程，数据保存在 D:\new_WaterTreatment-data。
+原始文献目录与旧 D:\WaterTreatment 未修改。前期研究记录保留。
+新工程已建立独立 Python 3.11 虚拟环境、固定依赖清单、配置示例及本地配置、Git 初始化和离线回归入口。
+
+本轮完成
+1. 按篇导入 PDF/DOCX，保存内容哈希快照、来源索引、不可静默覆盖的运行产物。
+2. PDF 全页文本与整页渲染；Word 原生段落/表格/公式/修订和图片实例定位，保留原格式。
+3. Paper、MaterialSample、Substance、Configuration、Experiment、Observation 六类核心对象，支持最终材料变体、污染物/催化剂/氧化剂、工况和观测证据。
+4. 明确未读、未报告、未量化、冲突及推断等状态，区分共同运行与数值配对，不拼接独立最优值。
+5. Codex 候选抽取及模型回源复核适配器，冻结输入、模型设置、提示、规则、代码和运行环境，保存调用事件及失败。
+6. 来源与关系校验、本地图谱投影、小规模人工金标准评测接口。模型结果不会自动成为科学已验证数据。
+7. 开发/验证暴露历史检查；候选导出时再次核对计划约束；图谱按候选指纹隔离。规则版本必须使用对应提示文件，缺失不回退到旧规则。
+
+最终工程验证
+完整离线回归：162 passed in 31.83s，退出码 0。
+依赖检查：No broken requirements found。
+代码指纹：19260fcfdea9b398a0c465b599ed8b39d49f7a6f6221c76beca994d0daadfb2d
+日志及机器可读报告：
+D:\new_WaterTreatment-data\exports\foundation-verification-20261111-3c8c3c64\verification.json
+D:\new_WaterTreatment-data\exports\foundation-verification-20261111-3c8c3c64\offline-tests.stdout.txt
+D:\new_WaterTreatment-data\exports\foundation-verification-20261111-3c8c3c64\source-smoke-and-plans.json
+
+实际文件通道验证
+C01（224_热催_CEJ）：正文和SI为2份PDF，共23页，生成23张页图。
+V10（324_热催_Desalination）：正文7页PDF，SI为1份DOCX，生成7张页图与15个Word图片实例预览。
+合计4份文件、30个PDF物理页；解析未报告error级问题，原件与快照哈希均保持一致。
+这里只验证导入、表示和图像生成，不等于已正确理解图表或已完成科学抽取。
+两篇均按development保存无模型调用的计划；最终计划位置见上述source-smoke-and-plans.json。
+早期计划因最后一次代码修订已失效，原记录保留；正式执行前仍须选定实际模型ID并重新准备计划。
+
+当前边界
+真实模型调用数：0；Neo4j连接数：0。
+没有完成393篇批量抽取、科研准确率验收、材料推荐、降维或设计规则发现。
+PDF扫描/OCR和复杂表格、Word完整页面排版与部分图形变换仍需后续接入验证。
+分类和抽取规则继续使用可修订的v0.5，不宣称适用于所有文献。
+
+下一阶段
+先进行少量开发文献的真实Codex抽取，核对最终材料身份、实验与污染物/氧化剂归属、图表和SI覆盖、关键性能与漏抽情况。
+据实际失败调整解析/提示/结构与测试；固定版本后，在未参与规则修订的文献上开展小规模人工验收。
+通过上述验收后再扩大批处理，并接入正式图谱、检索、降维和材料设计分析。

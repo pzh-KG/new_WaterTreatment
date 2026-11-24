@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>双功能水处理材料 · 跨论文组成图</title>
+<style>
+:root{--ink:#19363d;--muted:#49666a;--line:#cbdad8;--teal:#116c71;--paper:#f4f7f6;--warm:#a75727;font-family:"Microsoft YaHei","Noto Sans CJK SC","Segoe UI",sans-serif;color:var(--ink);background:#f7f9f7}
+*{box-sizing:border-box}body{max-width:1350px;margin:auto;padding:30px 4.5vw 50px}h1{letter-spacing:-.045em;font-weight:650;margin:0;font-size:clamp(26px,3.6vw,45px)}h2{font-size:18px;margin:0 0 10px}p{line-height:1.65;margin:4px 0;color:var(--muted);font-size:14px}
+header{padding-bottom:20px}section{background:white;border:1px solid var(--line);padding:18px 21px;border-radius:9px}label{font-size:12px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+select,input[type=number],button{font:inherit;color:var(--ink);border:1px solid #aec4c2;background:white;border-radius:4px;min-height:33px;padding:5px 8px}select{width:100%;font-size:13px;text-overflow:ellipsis}input[type=number]{width:100%;font-size:13px}button{font-size:12px;cursor:pointer}button:hover,button:focus-visible{border-color:var(--teal);background:#edf6f4}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px 18px}.actions,.quick{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.actions{grid-column:1/-1;border-top:1px solid #e1eae8;padding-top:12px;justify-content:space-between}.check{flex-direction:row;align-items:center;color:var(--ink)}
+.layout{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(290px,.84fr);gap:14px;margin-top:16px}.maptop{display:flex;gap:10px;align-items:center;justify-content:space-between}.maptop select{width:auto}.maptop h2{margin:0}#chart{display:block;width:100%;height:auto;margin:13px 0 5px}#legend{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.dot{width:9px;height:9px;border-radius:100%;display:inline-block;margin-right:5px}
+.summary{font-size:16px;font-weight:650;color:var(--teal);margin:11px 0 4px}.scroll{max-height:460px;overflow:auto}.profilebtn{display:block;text-align:left;width:100%;border:0;border-bottom:1px solid #e0e9e7;border-radius:0;padding:8px 2px}.profilebtn strong{color:var(--teal);margin-right:8px}.muted{font-size:12px;color:var(--muted)}
+#detail{margin-top:16px}.tablewrap{overflow:auto;max-height:470px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;vertical-align:top;padding:7px 8px;border-bottom:1px solid #dfe9e6}th{background:var(--paper);position:sticky;top:0}a{color:var(--teal)}.material{padding:8px 0;border-top:1px solid #dee9e7}.material small{display:block;color:var(--muted);line-height:1.5}.point{cursor:pointer;outline:none}.point:hover circle.rim,.point:focus-visible circle.rim{stroke:#173a3f;stroke-width:3px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.scroll{max-height:240px}}@media(max-width:660px){body{padding:15px}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}section{padding:12px}.quick{gap:5px}}
+</style></head><body>
+<header><h1>双功能水处理材料的跨论文组成图</h1><p id="intro"></p></header>
+<section aria-label="实验筛选"><div class="filters">
+<label>污染物类别<select id="group"></select></label><label>具体污染物或检测指标<select id="target"></select></label>
+<label>实验采用的催化方式<select id="route"></select></label><label>组分搭配<select id="motif"></select></label>
+<label>目标光照（sun，允许差值 ±0.1）<input id="sun" type="number" min="0" step="any" placeholder="全部光照"></label>
+<label>水体或盐度条件<select id="water"><option value="">全部水体</option><option value="model">明确的模型水</option><option value="nacl">报告了 NaCl 质量分数</option><option value="seawater">明确为海水</option><option value="unspecified">报告盐度，盐种未定</option><option value="unknown">没有可用的数值盐度</option></select></label>
+<label>目标 NaCl（wt%，允许差值 ±0.5）<input id="salt" type="number" min="0" step="any" placeholder="不指定数值"></label>
+<label>液相去污反应时间（min）<input id="minutes" type="number" min="0" step="any" placeholder="全部时间"></label>
+<div class="actions"><label class="check"><input id="dual" type="checkbox">仅看有同工况蒸发通量和液相去除率配对的记录</label>
+<div class="quick"><button id="presetFe">苯酚 / 外加 H₂O₂</button><button id="presetPms">苯酚 / PMS / 1 sun 模型水</button><button id="reset">重置筛选</button></div></div></div></section>
+<div class="layout"><section><div class="maptop"><h2>材料组成 UMAP</h2><select id="color" aria-label="着色方式"><option value="group">按检测目标着色</option><option value="route">按催化方式着色</option></select></div>
+<p id="summary" class="summary" aria-live="polite"></p><p id="coverage"></p><svg id="chart" viewBox="0 0 650 372" role="group" aria-label="可逐点查看的 UMAP 组成图"></svg><div id="legend"></div>
+<p class="muted">每点代表一种组成，等分扇区表示覆盖的类别。细线连接彼此位列组成距离前两位、且共享组分名称或化学式的点。浅灰点保留全库位置，点击可查材料与论文。</p></section>
+<section><h2 id="listTitle">组成与论文</h2><div class="scroll" id="profiles"></div><p id="selection"></p></section></div>
+<section id="detail"><h2 id="detailTitle">实验记录</h2><div id="detailText"><p>选择图中的一个组成点，可查看具体配方、污染物、光照、盐度、采样位置、反应时间和原始观测。</p></div></section>
+<script type="application/json" id="data">__ATLAS_DATA__</script>
+<script>
+"use strict";
+const d=JSON.parse(document.querySelector("#data").textContent);
+const rows=d.rows.map(row=>Object.fromEntries(d.fields.map((k,i)=>[k,row[i]])));
+const targetColors={"Phenolics":"#ca773d","Dyes":"#8d5592","Pharmaceuticals":"#247d83","Other organics":"#5c73b2","Ions / elements":"#749548","Bulk / mixtures":"#796858","Microbes":"#bc4b71"};
+const routeColors={"Photocatalysis":"#347da3","External peroxide":"#bb6328","PMS":"#12817c","PDS":"#9a537b","In-situ peroxide":"#c99523","Electro-Fenton":"#6556a2","Electro-oxidation":"#667e37","Thermocatalytic oxidation":"#9f4f44","Unresolved arm":"#b1bbbf","Control":"#738189"};
+const zh={"Phenolics":"酚类","Dyes":"染料","Pharmaceuticals":"药物","Other organics":"其他有机物","Ions / elements":"离子或元素","Bulk / mixtures":"综合指标或混合物","Microbes":"微生物",
+"Photocatalysis":"光催化","External peroxide":"外加 H₂O₂","In-situ peroxide":"原位 H₂O₂","Electro-Fenton":"电芬顿","Electro-oxidation":"电氧化","Thermocatalytic oxidation":"热催化氧化","Unresolved arm":"实验催化方式未确定","Control":"对照条件",
+"Dual-role phase + separate water-supply component":"同一组分吸光产热并催化 ＋ 独立供水组分","Fe catalytic phase + separate carbon/polymer absorber":"含铁催化相 ＋ 独立碳或聚合物吸光相","Metal sulfide + polymer/fibre framework":"金属硫化物 ＋ 聚合物或纤维骨架",
+"phenol":"苯酚","catechol":"邻苯二酚","bisphenol a":"双酚 A","methylene blue":"亚甲基蓝","methyl blue":"甲基蓝","methyl orange":"甲基橙","rhodamine b":"罗丹明 B","tetracycline":"四环素","tetracycline hydrochloride":"盐酸四环素","ciprofloxacin":"环丙沙星","sulfamethoxazole":"磺胺甲噁唑","carbamazepine":"卡马西平","toluene":"甲苯","xylene":"二甲苯","nitrobenzene":"硝基苯","aniline":"苯胺",
+"Evaporation flux":"蒸发通量","Liquid parent removal":"液相母体去除率","Liquid parent ratio":"液相母体浓度比 C/C₀","Condensate endpoint":"冷凝水指标","Other liquid endpoint":"其他液相指标","Other endpoint":"其他指标","Stream unresolved":"取样位置未确定","Protocol only":"仅有实验条件","Signed field rate":"带符号的现场速率","Flux unit unresolved":"通量单位待核",
+"Defined model water":"明确的模型水","Seawater":"海水","River water":"河水","Lake water":"湖水","Brine":"卤水","Saline water":"盐水","Freshwater":"淡水","Industrial water":"工业水","Unspecified salts":"盐种未定",
+"reported":"文中报告","estimated":"从图估读","conflict":"来源冲突","not_reported":"未报告","unread":"未读","reaction_liquid":"反应液","feed":"进料液","condensate":"冷凝水"};
+const el=id=>document.getElementById(id), txt=x=>zh[x]||x, unique=xs=>Array.from(new Set(xs)), svgNS="http://www.w3.org/2000/svg";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+function options(id,values,all){let s=el(id),old=s.value;s.replaceChildren(new Option(all,""));for(const v of values)s.add(new Option(txt(v),v));if(values.includes(old))s.value=old}
+options("group",Object.keys(targetColors),"全部目标类别");
+options("route",Object.keys(routeColors),"全部实验方式");
+const families=unique(d.materials.flatMap(m=>m.families)).sort();
+options("motif",[...d.motifs,...families],"全部组分搭配");
+function targets(){let g=el("group").value;options("target",unique(rows.filter(r=>!g||r.group===g).map(r=>r.target)).sort(),"全部具体目标")}
+targets();
+const materialIdsByProfile=new Map(d.profiles.map(p=>[p.id, d.materials.map((m,i)=>m.profile===p.id?i:null).filter(i=>i!==null)]));
+const tally=xs=>({m:new Set(xs).size,p:new Set(xs.map(i=>d.materials[i].doi)).size,c:new Set(xs.map(i=>d.materials[i].profile)).size});
+const total=tally([...d.materials.keys()]);el("intro").textContent=total.p+" 篇论文 · "+total.m+" 个最终材料变体 · "+total.c+" 个组成点。坐标只用材料组成计算，筛选时保持固定。";
+let selected="",shownRows=[],highlight=new Set();
+function values(){return Object.fromEntries(["group","target","route","motif","sun","water","salt","minutes"].map(k=>[k,el(k).value]))}
+function matches(r,f){
+ const m=d.materials[r.mid];
+ if(f.group&&f.group!==r.group||f.target&&f.target!==r.target||f.route&&f.route!==r.route)return false;
+ if(f.motif&&!m.motifs.includes(f.motif)&&!m.families.includes(f.motif))return false;
+ if(f.sun!==""&&(r.sun===null||Math.abs(r.sun-Number(f.sun))>d.match.sun_tolerance+1e-8))return false;
+ if(f.water==="model"&&r.matrix!=="Defined model water"||f.water==="seawater"&&r.matrix!=="Seawater"||f.water==="unknown"&&r.salt!==null||f.water==="unspecified"&&(r.salt===null||r.salt_basis!=="Unspecified salts"))return false;
+ if((f.water==="nacl"||f.salt!=="")&&(r.salt===null||r.salt_basis!=="NaCl"))return false;
+ if(f.salt!==""&&Math.abs(r.salt-Number(f.salt))>d.match.nacl_wt_percent_points+1e-8)return false;
+ if(f.minutes!==""&&(r.time===null||r.time!==Number(f.minutes)||!["Liquid parent removal","Liquid parent ratio"].includes(r.endpoint)))return false;
+ return !el("dual").checked||r.pairs.length>0;
+}
+function svg(tag,atts={},content=""){const n=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(atts))n.setAttribute(k,String(v));if(content)n.textContent=content;return n}
+function draw(){
+ const f=values(),canvas=el("chart"),by=el("color").value,palette=by==="group"?targetColors:routeColors;
+ shownRows=rows.filter(r=>matches(r,f));
+ const assayFilter=["group","target","route","sun","water","salt","minutes"].some(k=>f[k]!=="")||el("dual").checked;
+ highlight=new Set(assayFilter?shownRows.map(r=>r.mid):d.materials.flatMap((m,i)=>!f.motif||m.motifs.includes(f.motif)||m.families.includes(f.motif)?[i]:[]));
+ const count=tally([...highlight]);el("summary").textContent=count.p+" 篇论文 · "+count.m+" 个材料变体 · "+count.c+" 个组成点";
+ const eids=new Set(shownRows.map(r=>d.materials[r.mid].doi+"|"+r.experiment));
+ el("coverage").textContent="当前有靶标归属的实验 "+eids.size+" 组，其中提供同工况蒸发与液相去除率配对的论文 "+new Set(shownRows.filter(r=>r.pairs.length).map(r=>d.materials[r.mid].doi)).size+" 篇。";
+ const colors=new Map(),activeProfiles=new Set([...highlight].map(i=>d.materials[i].profile));
+ for(const r of shownRows){const k=d.materials[r.mid].profile;if(!colors.has(k))colors.set(k,new Set());colors.get(k).add(r[by]);}
+ canvas.replaceChildren();canvas.append(svg("rect",{x:37,y:10,width:600,height:322,fill:"#f4f7f6",rx:5}));
+ const xx=d.profiles.map(p=>p.x),yy=d.profiles.map(p=>p.y),xmin=Math.min(...xx),xmax=Math.max(...xx),ymin=Math.min(...yy),ymax=Math.max(...yy);
+ const scale=Math.min(552/(xmax-xmin),277/(ymax-ymin)),mx=(xmin+xmax)/2,my=(ymin+ymax)/2;
+ const positions=new Map(d.profiles.map(p=>[p.id,[336+(p.x-mx)*scale,171-(p.y-my)*scale]]));
+ for(const [a,b] of d.links){const [xa,ya]=positions.get(a),[xb,yb]=positions.get(b);canvas.append(svg("line",{x1:xa,y1:ya,x2:xb,y2:yb,stroke:activeProfiles.has(a)&&activeProfiles.has(b)?"#bdceca":"#e0e8e5","stroke-width":1}));}
+ for(const p of d.profiles){
+  const x=336+(p.x-mx)*scale,y=171-(p.y-my)*scale,isOn=activeProfiles.has(p.id),groups=[...(colors.get(p.id)||[])].sort();
+  const shades=groups.map(g=>palette[g]||"#9eadae"),rad=isOn?8.2:5.8;
+  const g=svg("g",{class:"point",tabindex:0,role:"button","aria-label":p.id+" "+groups.map(txt).join("、"),"data-profile":p.id});
+  g.append(svg("title",{},p.id+" · "+(groups.map(txt).join("、")||"仅组成背景")));
+  if(shades.length<=1)g.append(svg("circle",{cx:x,cy:y,r:rad,fill:shades[0]||"#c7d3d4"}));
+  else for(let j=0;j<shades.length;j++){
+   const a=(j/shades.length-.25)*2*Math.PI,b=((j+1)/shades.length-.25)*2*Math.PI;
+   const path=["M",x,y,"L",x+rad*Math.cos(a),y+rad*Math.sin(a),"A",rad,rad,0,0,1,x+rad*Math.cos(b),y+rad*Math.sin(b),"Z"].join(" ");
+   g.append(svg("path",{d:path,fill:shades[j],stroke:"white","stroke-width":.55}));
+  }
+  g.append(svg("circle",{class:"rim",cx:x,cy:y,r:rad+1,fill:"transparent",stroke:selected===p.id?"#1d4149":"white","stroke-width":selected===p.id?2.3:.65}));
+  g.addEventListener("click",()=>pick(p.id));g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick(p.id)}});
+  canvas.append(g);
+ }
+ canvas.append(svg("text",{x:335,y:354,"text-anchor":"middle","font-size":13,fill:"#577175"},"UMAP 1"),svg("text",{transform:"translate(21 172) rotate(-90)","text-anchor":"middle","font-size":13,fill:"#577175"},"UMAP 2"));
+ const used=unique(shownRows.map(r=>r[by]));el("legend").innerHTML=Object.entries(palette).filter(([k])=>used.includes(k)).map(([k,c])=>'<span><i class="dot" style="background:'+c+'"></i>'+esc(txt(k))+"</span>").join("");
+ const list=el("profiles");list.replaceChildren();el("listTitle").textContent="筛选到的组成（"+activeProfiles.size+"）";
+ for(const p of d.profiles.filter(p=>activeProfiles.has(p.id))){const ids=materialIdsByProfile.get(p.id).filter(i=>highlight.has(i)), m=d.materials[ids[0]],b=document.createElement("button");b.className="profilebtn";b.dataset.profile=p.id;b.innerHTML="<strong>"+p.id+"</strong>"+esc(m.name)+' <span class="muted">· '+tally(ids).p+" 篇</span>";b.onclick=()=>pick(p.id);list.append(b);}
+ if(!activeProfiles.size)list.innerHTML="<p>当前筛选组合下没有已登记的材料实验。</p>";
+ if(selected)detail();else el("selection").replaceChildren();
+}
+function pick(id){selected=id;draw();document.querySelectorAll("#chart .point").forEach(g=>{if(g.dataset.profile===id)g.setAttribute("aria-pressed","true")});}
+function fmt(x){return x===null||x===undefined?"未定":String(x)}
+function detail(){
+ const pid=selected, ids=materialIdsByProfile.get(pid),active=ids.filter(i=>highlight.has(i)),rs=shownRows.filter(r=>ids.includes(r.mid));
+ el("detailTitle").textContent=pid+" · 材料与实验记录";const lines=[];
+ el("selection").innerHTML="<b>"+pid+"</b> · "+active.length+" 个匹配变体 · "+rs.length+' 条靶标记录　<a href="#detail">查看观测与证据 ↓</a>';
+ if(!active.length)lines.push("<p>该组成属于全库底图，当前条件下没有匹配实验。</p>");
+ for(const i of active.length?active:ids){
+  const m=d.materials[i],s=d.studies[m.doi];lines.push('<div class="material"><b>'+esc(m.name)+'</b> · <a target="_blank" rel="noopener" href="https://doi.org/'+esc(m.doi)+'">'+esc(s[0])+' 原文</a><small>'+esc(s[1])+'</small><small>'+m.parts.map(p=>esc(p.name)+(p.formula?" ("+esc(p.formula)+")":"")).join(" ＋ ")+"</small></div>");
+ }
+ if(rs.length){lines.push('<div class="tablewrap"><table><thead><tr>'+["论文 / 材料","目标 / 方式","光照 / 水体 / 盐度","检测终点 / 时间","同工况蒸发通量","实验、观测与证据"].map(x=>"<th>"+x+"</th>").join("")+"</tr></thead><tbody>");
+  for(const r of rs){const m=d.materials[r.mid],orig=r.value===null,u=orig?r.raw_unit||"":r.endpoint==="Evaporation flux"?" kg m⁻² h⁻¹":r.endpoint==="Liquid parent removal"?"%":"",num=orig?r.raw_value:r.value,v=num===null?"":(orig&&r.metric_label?" · "+r.metric_label+" ":"")+(r.status==="estimated"?"≈ ":"")+num+u;
+   const salt=r.salt===null?"数值盐度未定":r.salt+" wt% "+txt(r.salt_basis);
+   const tm=r.time===null?"":r.time+" min";
+   lines.push("<tr><td>"+esc(d.studies[m.doi][0])+"<br>"+esc(m.material)+"</td><td>"+esc(txt(r.target))+"<br>"+esc(txt(r.route))+"</td><td>"+esc(r.sun===null?"光照未定":r.sun+" sun")+"<br>"+esc(txt(r.matrix)||"水体未定")+"<br>"+esc(salt)+"</td><td>"+esc(txt(r.endpoint))+" "+esc(v)+"<br>"+esc([tm,txt(r.stream),txt(r.status)].filter(Boolean).join(" · "))+"</td><td>"+(r.pairs.length?r.pairs.map(p=>esc((p[3]==="estimated"?"≈ ":"")+p[0]+" kg m⁻² h⁻¹ · "+p[2])).join("<br>"):"—")+"</td><td>"+esc(r.experiment)+"<br>"+esc(r.observation||"仅实验登记")+"<br>"+(r.evidence_ids||[]).map(esc).join(", ")+"</td></tr>");
+  }lines.push("</tbody></table></div>");
+ }else lines.push("<p>未匹配到有靶标归属的实验记录。</p>");
+ el("detailText").innerHTML=lines.join("");
+}
+function reset(){for(const k of ["group","target","route","motif","sun","water","salt","minutes"])el(k).value="";el("dual").checked=false;selected="";targets();el("detailTitle").textContent="实验记录";el("detailText").innerHTML="<p>选择一个组成点以查看材料和实验。</p>";}
+function preset(route,motif,model){reset();el("group").value="Phenolics";targets();el("target").value="phenol";el("route").value=route;el("motif").value=motif;if(model){el("sun").value="1";el("water").value="model"}draw();}
+el("presetFe").onclick=()=>preset("External peroxide",d.motifs[1],false);el("presetPms").onclick=()=>preset("PMS",d.motifs[0],true);el("reset").onclick=()=>{reset();draw()};
+for(const id of ["group","target","route","motif","sun","salt","water","minutes","dual","color"])el(id).addEventListener(["sun","salt","minutes"].includes(id)?"input":"change",()=>{if(id==="group")targets();draw()});
+draw();
+</script></body></html>

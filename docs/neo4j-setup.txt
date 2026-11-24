@@ -1,0 +1,62 @@
+WaterTreatment 独立 Neo4j 实例
+创建日期：2026-11-11
+
+实例与连接
+版本：Neo4j 5.26.19 Community，沿用本机分发目录的程序文件。
+程序目录：D:\neo4j.5\neo4j-water-treatment-v2
+配置文件：D:\neo4j.5\neo4j-water-treatment-v2\conf\neo4j.conf
+业务数据库：watertreatment
+浏览器：http://127.0.0.1:7475/browser/
+Bolt：bolt://127.0.0.1:7688
+用户名：neo4j
+密码文件：D:\new_WaterTreatment-data\secrets\neo4j-password.txt
+密码随机生成；密码目录关闭继承权限，仅当前用户和SYSTEM具有访问权限。工程配置只保存密码文件位置，不保存密码本身。
+
+数据位置
+数据：D:\new_WaterTreatment-data\neo4j\data
+事务日志：D:\new_WaterTreatment-data\neo4j\transactions
+运行日志：D:\new_WaterTreatment-data\neo4j\logs
+进程记录与启动/停止日志：D:\new_WaterTreatment-data\neo4j\run
+
+管理命令（可从任意目录执行）
+启动：
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\new_WaterTreatment\scripts\neo4j\start.ps1"
+查看状态：
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\new_WaterTreatment\scripts\neo4j\status.ps1"
+正常停止：
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\new_WaterTreatment\scripts\neo4j\stop.ps1"
+工程连接检查：
+D:\new_WaterTreatment\.venv\Scripts\python.exe -m watertreatment --config D:\new_WaterTreatment\config\project.local.json neo4j-check --live
+
+新实例以当前用户的隐藏控制台进程运行，没有安装Windows服务或开机自动启动项。电脑重启或用户注销后，使用启动脚本重新启动。
+启动脚本启动专用后台进程；状态输出中的端口ready仅说明监听，成功登录还需运行工程连接检查。
+停止脚本核对PID创建时间、启动脚本、启动token、新实例Java路径与控制台成员，然后发送正常CTRL-C。身份不匹配、端口被其他进程占用或停止超时会报错，不自动强杀任何进程。
+
+新旧隔离
+旧实例 D:\neo4j.5\neo4j-biomass-mof-water 和旧数据目录保持原样。
+旧实例继续使用7474/7687，新实例使用7475/7688；仅绑定本机回环地址。
+没有复制旧实例data、认证状态、旧日志、旧导入文件或旧插件。
+没有修改全局NEO4J_HOME、NEO4J_CONF、PATH或Windows服务；新实例脚本仅设置子进程环境。
+因此，直接输入neo4j console仍可能启动旧实例；新实例使用上述专用脚本。
+
+工程接口与验证边界
+config/project.local.json 已启用明确的新URI、用户名、密码文件和watertreatment业务库。
+neo4j-check --live使用官方驱动，只读检查登录及实际数据库名称；名称不符立即失败，不回退默认库，也不导入任何图数据。
+timeout_seconds用于连接、连接池获取和查询事务各阶段，不代表整个命令的硬性总时限。
+当前连接测试已确认system与watertreatment在线，业务图为空。正式科研数据接纳与图谱写入仍是后续步骤。
+本轮实例创建、实际连接及旧配置对照记录保存在：
+D:\new_WaterTreatment-data\exports\neo4j-setup-20261111-05002109
+
+交付验证结果
+新实例当前后台运行，system和watertreatment均online，浏览器HTTP返回200。
+正常CTRL-C停库与重新启动实测通过，重启后业务数据库ID保持一致。
+旧实例PID仍为21916，继续监听7474/7687；4份旧配置文件哈希均未变，102个旧数据文件的大小与修改时间均未变。未为比对读取旧数据文件内容。
+全局环境未改变，程序未向旧实例发送管理或数据写入命令。
+完整离线回归188项通过，依赖检查通过；实际连接检查独立于离线测试执行。
+详细最终记录：
+D:\new_WaterTreatment-data\exports\neo4j-setup-20261111-05002109\final-verification.json
+
+相关官方资料
+https://neo4j.com/docs/operations-manual/5/configuration/configuration-settings/
+https://neo4j.com/docs/operations-manual/current/configuration/set-initial-password/
+https://neo4j.com/docs/python-manual/current/connect/

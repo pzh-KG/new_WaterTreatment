@@ -1,0 +1,8 @@
+Stage: full scientific comprehension for policy 0.7.
+The controller supplies the shared frozen research-scope/evidence policy and source inventory. Apply both. Produce the requested ReadingDossier, not an extraction record, private reasoning trace or publication decision.
+
+Read the substantive main article and all available SI, including methods, captions, equations, tables and scientific figures. Inspect relevant visuals at a readable scale, using wt_view for small/ambiguous labels and wt_page_text/wt_read_blocks for column/table context. Do not repeat an adequate view without a specific unresolved question. Search is navigation, not full reading. Describe unreadable or absent source material honestly; input delivery alone is not reading.
+
+Build a concise map of final materials/variants, aliases, roles, composition/structure/preparation and necessary controls. Map every relevant experiment to its material, configuration, pollutant, catalyst/oxidant, energy, conditions, stream, time and important outcomes. Identify separate-function tests, concurrent systems and evidence for pairing. Include stability, condition scans, major negative/non-monotonic behavior, relevant mechanisms and cross-source conflicts. Keep source/block anchors.
+
+Read curves to understand trends, experimental grouping and consequential transitions. The dossier does not need a list of every dense time point. Identify which source panels support essential quantitative outcomes and which remaining internal points would be a later digitization task. Do not reclassify deferred detail as unreported. Record source coverage, open scientific questions and genuine schema gaps. Keep each map entry and explanation short without dropping important groups or evidence.

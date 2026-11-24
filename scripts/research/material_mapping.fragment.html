@@ -1,0 +1,69 @@
+<style>
+  #wt-material-map { display: flex; flex-direction: column; gap: calc(var(--font-size-base) * 0.75); }
+</style>
+<section id="wt-material-map" data-viz-composition>
+  <h2>材料特征分布 · 初版</h2>
+  <p class="text-small" data-map-scope></p>
+  <div class="viz-controls">
+    <label class="form-label" for="wt-map-axes">映射特征
+      <select id="wt-map-axes" class="form-select">
+        <option value="form">化学类别 × 宏观形态</option>
+        <option value="role">化学类别 × 保留组分功能</option>
+      </select>
+    </label>
+    <label class="form-label" for="wt-map-policy">标签依据
+      <select id="wt-map-policy" class="form-select">
+        <option value="inclusive">报告与推断分别计数</option>
+        <option value="reported">仅作者报告</option>
+      </select>
+    </label>
+  </div>
+  <div data-viz-container></div>
+  <p class="text-small" data-map-coverage aria-live="polite"></p>
+  <p class="text-small text-muted">多标签计数，同一变体可出现在多个格子；0表示当前记录无此标签组合。无可用标签单列，功能视图只采用已有词典标签。悬停或聚焦格子查看材料名称与推断数量。</p>
+  <p class="text-small text-muted">候选抽取记录 · 尚未建立独立科学准确率 · 位置表示分类，不表示物性距离或性能优劣</p>
+  <script type="application/json" data-map-metadata>__MAPPING_METADATA__</script>
+  <!-- MAPPING_CHARTS -->
+</section>
+<script type="module">
+  import { mountChart } from "https://persistent.oaistatic.com/plugins/visualize/charts/1.6.5/element.js";
+  const root = document.getElementById("wt-material-map");
+  const configs = new Map(Array.from(root.querySelectorAll("[data-viz-chart]"), el => [el.dataset.mapKey, JSON.parse(el.textContent)]));
+  const metadata = JSON.parse(root.querySelector("[data-map-metadata]").textContent);
+  const axes = root.querySelector("#wt-map-axes");
+  const policy = root.querySelector("#wt-map-policy");
+  const coverage = root.querySelector("[data-map-coverage]");
+  root.querySelector("[data-map-scope]").textContent = `${metadata.papers}篇已发布候选文献 · ${metadata.primary}个主材料 + ${metadata.variants}个优化变体 · ${metadata.components}个体系部件另存`;
+  let chart = null;
+  function applyState(state) {
+    if (!state || state.version !== 1) return;
+    if (["form", "role"].includes(state.axes)) axes.value = state.axes;
+    if (["inclusive", "reported"].includes(state.policy)) policy.value = state.policy;
+  }
+  function render() {
+    const key = `${axes.value}-${policy.value}`;
+    const config = configs.get(key);
+    if (!config) throw new Error("Missing material-map configuration");
+    if (chart) chart.config = config;
+    else chart = mountChart(root.querySelector("[data-viz-container]"), config);
+    const counts = metadata.coverage[key];
+    coverage.textContent = `两轴均有可用标签：${counts.both} / ${metadata.total}个变体；含无可用标签的变体：${metadata.total - counts.both}个`;
+  }
+  function onChange() {
+    render();
+    if (window.openai?.setWidgetState) {
+      window.openai.setWidgetState({modelContent: {version: 1, axes: axes.value, policy: policy.value}, privateContent: null}).catch(() => {});
+    }
+  }
+  applyState(window.openai?.widgetState?.modelContent);
+  render();
+  axes.addEventListener("change", onChange);
+  policy.addEventListener("change", onChange);
+  function onGlobals(event) {
+    const state = event.detail?.globals?.widgetState?.modelContent;
+    if (!state) return;
+    applyState(state);
+    render();
+  }
+  window.addEventListener("openai:set_globals", onGlobals);
+</script>

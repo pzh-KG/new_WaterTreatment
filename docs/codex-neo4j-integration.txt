@@ -1,0 +1,53 @@
+Codex 6.1 Sol MAX 与 Neo4j 接入
+日期：2026-11-11
+
+当前配置
+Codex模型：gpt-6.1-sol
+推理强度：max（与xhigh区分）
+认证：本机Codex CLI已有的ChatGPT登录，由官方CLI处理；项目不复制认证文件。
+每个抽取计划最多2次调用（抽取、模型回源复核），单次上限1800秒，失败不自动重试。
+Neo4j：bolt://127.0.0.1:7688，业务库watertreatment，密码来源仍为新数据目录中的专用密码文件。
+
+实际发现与处理
+首次合成试调用能够识别图片，但Windows策略阻止模型自行执行Get-Content读取文件，因而文本项未通过。失败输出原样保留。
+已改为项目读取原件并生成完整来源表示，再把完整解析文本、分类词典、源/块编号和逐图定位直接嵌入冻结提示；PDF整页图和Word图片实例通过官方CLI的--image提供。抽取和复核均使用同一完整来源输入。
+模型无需运行文件读取命令，也不需要解除执行策略。路径仅用于来源追溯；缺少/无法渲染的内容必须记录读取限制。
+CLI对图片输入核验哈希与输入清单，不静默删页或截断图片。Windows参数长度超限会显式失败；更长文献的分段阅读需另行设计和验证。
+
+常用命令（在D:\new_WaterTreatment执行）
+检查公开配置，不调用模型或数据库：
+.\.venv\Scripts\python.exe -m watertreatment doctor
+一次合成文字/图片/结构化输出真实模型测试：
+.\.venv\Scripts\python.exe -m watertreatment codex-check --live
+检查指定业务库登录与真实库名：
+.\.venv\Scripts\python.exe -m watertreatment neo4j-check --live
+从已导入来源包准备计划，自动使用配置中的6.1 Sol MAX：
+.\.venv\Scripts\python.exe -m watertreatment prepare "D:\new_WaterTreatment-data\runs\导入运行ID\sources.json" --cohort-role development
+执行该冻结计划：
+.\.venv\Scripts\python.exe -m watertreatment extract "D:\new_WaterTreatment-data\runs\抽取运行ID\plan.json" --live
+把通过来源与规则校验的注册候选加载到新库：
+.\.venv\Scripts\python.exe -m watertreatment graph-load "D:\new_WaterTreatment-data\runs\抽取运行ID\candidate.json" --live
+同一入口追加--rollback可测试数据事务并回滚；该模式不创建约束或保留图数据。
+
+候选图谱语义
+graph-load只接受带冻结计划的注册candidate.json，重查文献身份、数据集角色、版本、源文件完整性及科学关系校验错误。
+加载前保存完整记录副本和本地图谱；正式加载以单个事务提交数据，按图谱内容指纹隔离快照。首次正式加载建立WTProjection/WTEntity唯一ID约束，重复加载同一内容可幂等合并。
+所有加载结果标记candidate_unverified；模型同意、校验通过或成功入库不自动改成人工确认或科学接纳。
+混合类型列表按JSON保留并通过wt_json_properties标明，完整事实仍以本地JSON记录为准。
+
+环境变量
+用户已将机器级NEO4J_HOME改为新实例路径。已打开的Codex/控制台进程可能仍继承旧值，关闭并重新打开可刷新。
+工程使用显式URI和数据库名，不靠NEO4J_HOME选择连接目标。专用启停脚本继续只管理新实例；用户在已刷新环境的控制台中也可使用neo4j console。
+
+验证边界与记录
+合成文字、图片及结构化JSON真实调用已通过，模型请求固定gpt-6.1-sol/max。CLI事件没有披露更细的后端模型快照，effective_model保持null，不由模型自述伪造。
+新库实际连接及合成图数据事务写入/回滚验证通过，测试前后节点和关系均为0；本轮不导入真实科研候选。
+未执行393篇批量抽取，也没有用这次合成测试估计科研准确率。
+审计目录：D:\new_WaterTreatment-data\exports\sol-max-integration-20261111-512a81ab
+成功模型测试：D:\new_WaterTreatment-data\runs\20261111T085648-3396a0cc9a0d
+保留的首次失败：D:\new_WaterTreatment-data\runs\20261111T085057-ff566cb7d348
+
+官方依据
+https://learn.chatgpt.com/docs/models?surface=cli
+https://developers.openai.com/api/docs/models/gpt-6.1-sol
+本机Codex CLI 0.167.0-alpha.3.2的exec --help和models_cache.json均确认模型/图片输入/推理强度能力。

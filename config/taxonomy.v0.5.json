@@ -1,0 +1,64 @@
+{
+  "version": "0.5",
+  "description": "Final material chemistry, form, component role and origin are independent nonexclusive axes. Labels require source evidence; precursor names and abbreviations do not determine final identity.",
+  "axes": [
+    {"id": "chemistry", "label": "最终化学类别", "terms": [
+      {"id": "carbon", "label": "碳材料"},
+      {"id": "graphitic_carbon", "label": "石墨类碳", "parent": "carbon"},
+      {"id": "amorphous_carbon", "label": "无定形碳", "parent": "carbon"},
+      {"id": "metal", "label": "金属及合金"},
+      {"id": "inorganic_compound", "label": "无机化合物"},
+      {"id": "oxide", "label": "氧化物", "parent": "inorganic_compound"},
+      {"id": "hydroxide", "label": "氢氧化物", "parent": "inorganic_compound"},
+      {"id": "layered_mixed_hydroxide", "label": "混合金属层状氢氧化物", "parent": "hydroxide"},
+      {"id": "sulfide", "label": "硫化物", "parent": "inorganic_compound"},
+      {"id": "carbide_nitride", "label": "碳化物及氮化物", "parent": "inorganic_compound"},
+      {"id": "mxene", "label": "MXene", "parent": "carbide_nitride"},
+      {"id": "oxyhalide", "label": "氧卤化物", "parent": "inorganic_compound"},
+      {"id": "mixed_anion_phase", "label": "混阴离子无机相", "parent": "inorganic_compound"},
+      {"id": "hydroxyl_carbonate", "label": "羟基碳酸盐", "parent": "mixed_anion_phase"},
+      {"id": "polymer", "label": "聚合物"},
+      {"id": "organic_molecule", "label": "有机功能分子"},
+      {"id": "supramolecular_assembly", "label": "超分子组装"},
+      {"id": "coordination_framework", "label": "保留配位框架"},
+      {"id": "mof", "label": "完整金属有机框架", "parent": "coordination_framework"},
+      {"id": "cof", "label": "共价有机框架"}
+    ]},
+    {"id": "form", "label": "形态与组合", "terms": [
+      {"id": "monolith", "label": "整体材料"},
+      {"id": "membrane", "label": "膜"},
+      {"id": "aerogel", "label": "气凝胶"},
+      {"id": "hydrogel", "label": "水凝胶"},
+      {"id": "foam", "label": "泡沫"},
+      {"id": "fabric", "label": "纤维布"},
+      {"id": "coated_electrode", "label": "涂层电极"},
+      {"id": "dispersed_particles", "label": "分散颗粒"},
+      {"id": "nanofluid", "label": "纳米流体"},
+      {"id": "nanowire", "label": "纳米线"},
+      {"id": "nanosheet", "label": "纳米片"},
+      {"id": "multicomponent_assembly", "label": "多部件组装"}
+    ]},
+    {"id": "role", "label": "有证据的组分角色", "terms": [
+      {"id": "photothermal", "label": "光热供热"},
+      {"id": "catalyst", "label": "化学催化"},
+      {"id": "oxidant_activator", "label": "氧化剂活化"},
+      {"id": "electron_transport", "label": "电子输运"},
+      {"id": "electrode_reaction", "label": "电极反应"},
+      {"id": "binder", "label": "黏结"},
+      {"id": "support", "label": "结构支撑"},
+      {"id": "thermal_insulation", "label": "隔热"},
+      {"id": "light_management", "label": "反射或集光"},
+      {"id": "water_supply", "label": "供液"},
+      {"id": "consumable_inventory", "label": "反应消耗库存"},
+      {"id": "adsorbent", "label": "吸附"}
+    ]},
+    {"id": "origin", "label": "来源而非最终化学身份", "terms": [
+      {"id": "biomass_derived", "label": "生物质来源"},
+      {"id": "mof_derived", "label": "MOF衍生"},
+      {"id": "commercial", "label": "商用原料或基材"},
+      {"id": "synthetic", "label": "人工合成来源"},
+      {"id": "waste_derived", "label": "废弃物来源"},
+      {"id": "mineral_derived", "label": "矿物来源"}
+    ]}
+  ]
+}

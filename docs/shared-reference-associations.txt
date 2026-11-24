@@ -1,0 +1,70 @@
+Shared controls and reference observations (rule 0.8, optional schema extension)
+
+Purpose
+An observation keeps exactly one primary experiment and one primary quantitative
+series. Another experiment, source series or design comparison can cite that
+existing result through ExtractionRecord.reference_associations. No observation
+value is copied and no new experiment or physical replicate is invented.
+
+Extraction contract
+Each ReferenceAssociation has a stable id, target_kind (experiment, series or
+comparison), target_id, existing observation_ids, relationship (shared_control,
+shared_reference or contextual_comparison), applicability (reported, inferred,
+ambiguous or conflict), evidence_ids and a source-specific rationale. Explicit
+matched_conditions, differing_conditions, unresolved_conditions and limitations
+keep the reference's comparison scope visible.
+
+reported applicability means the source reports that reference relationship. It
+does not establish identical physical runs, identical measurement conditions,
+simultaneous performance pairs, independent replication, or causal attribution.
+If reuse/applicability is inferred from a common protocol, mark it inferred and
+explain the uncertainty. Never create references from equal numbers, matching
+formulas, names, free-text heuristics, or inferred absence of extra experiments.
+
+Evidence
+Include the reference observation's value/source anchor and the target context
+which supports reusing it. For a series target, the latter must resolve to that
+series' source block. For an experiment/comparison target, retain an anchor also
+associated with that target. These are necessary structural checks only: a shared
+page/block does not prove that a panel supports the asserted control. The source
+review must inspect the actual panel, condition and applicability.
+
+Ownership and downstream use
+- Do not put another owner's observation in quantitative_coverage.observation_ids
+  merely to restore a common reference: that list is primary series membership.
+- Do not rewrite the referenced observation's experiment_id/series_id.
+- A reference may qualify existing DesignComparison.observation_ids without
+  removing those dependencies; comparison evidence is not primary ownership.
+- Multiple targets can reference the same original observation. Count distinct
+  observations/runs according to actual source evidence, never reference links.
+- A referenced important control cannot be reclassified as optional dense detail.
+- Missing, differing, inferred or conflicted conditions restrict comparisons;
+  they do not delete an otherwise useful paper or authorize filling missing data.
+
+Offline graph/view projection
+The graph adds ReferenceAssociation nodes with explicit applicability, evidence,
+context and limitations:
+
+  Experiment/ObservationSeries/DesignComparison --USES_REFERENCE-->
+  ReferenceAssociation --REFERENCES_OBSERVATION--> existing Observation
+
+REPORTS, IN_SERIES and PAIRED_WITH remain unchanged. The reference projection
+states independent_replicates_added=0 and automatic_pairing=false. The core view
+keeps observation_ids (primary members) separate from referenced_observation_ids;
+reference_entry_refs locate the original view rows instead of duplicating values.
+Graph retrieval supports entity=reference to navigate the second step and returns
+instructions requiring the bound record and original evidence before comparisons.
+These code paths do not connect to or write Neo4j by themselves.
+
+Compatibility
+reference_associations defaults to an empty list and is omitted when empty during
+serialization. Loading old snapshots through this schema does not add an empty
+key or change their scientific fingerprints. Populating this extension is limited
+to rule 0.8/schema 0.4.0, and must occur in a new preserved candidate version.
+
+Verification
+Synthetic offline tests cover cross-target references, unchanged ownership and
+values, no duplicated measurements/replicates/pairs, missing dual-side anchors,
+invalid target/observation IDs, ambiguous applicability, preserved old snapshots,
+core-view navigation, and fixed read-only graph queries through a fake driver.
+Passing those checks is not scientific validation of a particular reference.

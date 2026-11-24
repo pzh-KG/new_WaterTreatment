@@ -1,0 +1,53 @@
+抽取输入、阅读档案与局部审查的恢复说明（2026-11-17）
+
+适用范围
+科学抽取规则仍为0.8，模型仍为gpt-6.1-sol / max。该修改调整来源交付、审查编排和恢复证明，不删减核心条件、循环、对照或不利结果，不提高原有超时或输入上限。所有输出仍是候选；机器检查、模型审查和来源回查均不等于独立科学验证。
+
+1. Word与其他原文交付
+新计划保留全部源块ID、顺序和原始文本；保留表格位置、公式XML、图片出现位置/裁剪信息及解析异常。重复XML定位、默认解析状态和文件路径保存在原始sources.json，模型可用注册工具回查。没有截断长论文或只给摘要。
+计划在模型调用前按UTF-8字节预检理解与首次整稿审查的固定输入、候选视图和反馈预算；每次调用仍检查真实输入。预检不是上下文token/图片容量保证。若仍超限，停止并保留计划，需显式完整分段阅读方案，不能提高上限掩盖问题。
+
+2. 阅读覆盖记录
+新抽取在理解后派生版本化结构性更正，只把可以证实为空的段落/XML容器记为out_of_scope、text_read=false。原reading_dossier.json保持不变；非法ID不会再导致同一条记录中的合法ID丢失。
+非空内容不会自动补标已读。若科学审查结束但仍有dossier缺项，状态明确为candidate_incomplete_reading_coverage / coverage_correction_required；结果保存来源和缺项数。
+已完成科学审查、仅阅读档案缺项的运行，可以进行单独覆盖补正。该操作严格验证旧候选、旧模型审查、源文件、调用和公共完成协议，新run按字节继承候选与科学审查。模型只回查缺项及必要上下文，本研究实质内容还要查询冻结候选。发现新的科学疑点会阻止准入，不能用记账修复代替科学修订。
+
+PowerShell示意（替换为实际已注册父run路径）：
+.\.venv\Scripts\python.exe -m watertreatment --config config/project.local.json prepare-coverage-correction <父run目录> --timeout-seconds 900
+.\.venv\Scripts\python.exe -m watertreatment --config config/project.local.json complete-coverage-correction <新plan.json> --live
+
+准备命令不调用模型。执行命令最多一次显式开启的模型调用，缺项若全是可证空结构则无需模型。相同父run不能靠重复准备不断重置预算；失败记录与未完成内容必须保留。
+
+3. 局部修订后的审查
+范围编译器v2可处理有证据的条件、单位及条件数组成员修订，包含必要的实验、观测、对比和原文依赖。旧版本范围按原算法及哈希复核，不偷偷升级旧证明。材料身份、主性能数值、源定义、覆盖成员等高影响变化仍有严格边界；不能因为局部审查更快就跳过影响分析。
+规则0.7/0.8中无法建立可靠范围的修订会保存scope_rejection.vNN.json并可恢复停止，不再静默提交整稿。历史0.5运行保持其原审查合同。
+完整首审仍存在。局部复审只继承经过认证的完整审查；没有真正完成的最后一次审查不能充当基线。如果当前版本已有已完成审查call，即使audit.vNN.json尚未落盘也不允许绕过其问题。
+
+4. 已完成修订但最后审查失败的候选
+prepare的--reuse-dossier、--reuse-candidate、--reuse-source-audit现在支持身份一致的development或unassigned运行；不接受heldout恢复。只接收数据根目录内、能还原已完成模型提交和工具修订链的candidate.vNN.json，不接收任意下载后编辑的JSON。
+条件等科学修订进入有来源证明的局部审查范围。新run保留父run、候选、基线审查、源文件及公开协议的哈希；不把内部事件日志交给模型，也不继承失败审查的批准。
+
+示意：
+.\.venv\Scripts\python.exe -m watertreatment --config config/project.local.json prepare <原导入run/sources.json> --cohort-role <与父plan一致> --reuse-dossier <父run/reading_dossier.json> --reuse-candidate <父run/candidate.vNN.json> --reuse-source-audit
+.\.venv\Scripts\python.exe -m watertreatment --config config/project.local.json extract <新plan.json> --live
+
+5. 保留、准入与开发历史
+上述命令不写Neo4j。网页在加载新代码后可索引完成的新run并验证新的来源证明，旧run和失败记录保留。没有通过证明验证的版本仍不能当可用结果。
+恢复与调试另外追加development_use历史，不改旧候选的cohort身份；同论文或同来源字节后续不能登记成独立heldout验证。
+本次试点另用config/continuation-pilot.local.json，保持Sol MAX且禁用Neo4j；普通项目配置及时间上限不变。试点续审耗时不能当作从零阅读、抽取一篇论文的全流程耗时。
+
+6. 已完成但来源交付或逐项说明未齐的局部审查
+若供应商公共协议确认审查回答已经完成，但控制器因来源交付缺口拒绝收录，新的单次补审可以继承经过字节和调用证明核验的回答。只有明确缺少的来源检查及逐项处置说明进入补审；新的科学疑点、身份变化、缺失基线或无法核验的输入不能走此通道。原调用继续保留failed状态，不把“回答已完成”改写为“原审查已通过”。
+补审要求本轮精确查询每条指定候选路径，包含独立列出的子字段；禁止改候选或重写整篇审查。合并采用追加方式，原有问题、限制及不确定性保留；最后重新验证原局部审查的全部依赖约束。
+Word原生表格使用完整表结构、所有子块及公式的读取证明；图片仍要求实际完整视图。对历史错误的表格视图要求，另存明确版本化的来源类型更正，保留原要求和失败证据。不能把XML读取描述成图像查看；已可核验的完整表格读取可以继承，不强制重复读取。
+补审继承原续处理计划剩余的调用次数与时间预算，不能靠新run重置预算。同一失败父run只允许一次明确补审。若科学处置完整而阅读档案仍有缺项，仍为coverage_correction_required，不会直接准入。
+
+PowerShell示意：
+.\.venv\Scripts\python.exe -m watertreatment --config config/project.local.json prepare-partial-audit-completion <失败局部审查父run目录> --timeout-seconds 600
+.\.venv\Scripts\python.exe -m watertreatment --config config/project.local.json complete-partial-audit <新plan.json> --live
+
+该恢复通道范围有意受限：只接收可证明来自已完成修订的首轮局部审查及其未改候选。任意失败、下载后编辑的JSON或新科学修订不自动符合条件。
+
+验证入口
+.\.venv\Scripts\python.exe scripts/quality/run_offline_regression.py -q
+该入口禁止provider和Neo4j调用，缺依赖即失败。选择少量测试应使用-k表达式；直接追加测试文件路径仍会同时收集tests根目录。

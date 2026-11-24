@@ -1,0 +1,91 @@
+WaterTreatment 网页参考产品调研与规划修订依据
+日期：2026-11-12
+目的：用公开可核查的产品工作流程与界面示例修订网页规划，而不是只凭功能清单自行排页面。
+
+一、调研方法与实际查看范围
+
+选取与任务直接相关的六类参考：Elicit的数据抽取、Covidence的原文对照、Rayyan的附件匹配和筛选、Zotero的文献/附件组织、Google Notebook的来源限定问答、Consensus的证据展示。
+已检索并打开这些产品的官方帮助页面。Covidence的公开抽取工作台示例还通过浏览器截图进行了视觉检查；看到原文阅读区、分区导航、右侧抽取表单及顶部保存提示。其余采用公开操作文档，不声称已试用登录后的完整产品。Elicit博客在浏览器加载时连接关闭，但官方帮助正文可通过网页检索读取。
+未登录产品、未注册或购买服务、未上传用户文献。没有进行抽取准确率对比，也没有把厂商“最准确”“消除幻觉”等宣传语作为依据。
+Zotero部分参考属于桌面产品的信息组织方式；其Web Library功能边界单独核对，不将桌面能力标为网页现成功能。
+
+二、产品事实与本项目适配分别记录
+
+1. Elicit：从结果单元格进入证据
+公开可证事实：官方系统综述说明支持按列抽取，先在少量论文上调整列定义；完成后可点选单元格查看支持引文。[B1]
+适配决定：结果页增加可展开的实验结果表，每个关键数值可直接打开证据抽屉。列名用科研中文；复杂信息按主题分组显示，避免一屏几十列。我们的行必须保留论文、最终材料变体、实验和时间，不能因为竞品以论文表格为主要入口，就把一篇论文所有工况压成一个最高值。
+边界：采用交互方式，不采用其模型、套餐、报告篇数上限或默认筛选标准；本项目仍用6.1 Sol MAX。
+
+2. Covidence：可调宽度的原文和表单并排
+公开可证事实：Extraction 1说明并展示PDF与表单并排、可调宽度、阅读缩放/搜索，以及自动保存提示；建议值有支持引文。[B2]
+适配决定：人工抽查默认以原文和结果两个主区域展开，材料/实验导航可收起，不固定三列同时占满屏幕。保存草稿的状态与提交人工结论分开。核对时按结果组切换，正在看的原文位置保持不变。
+边界：不套用临床PICO表单，也不把全部文献改成双人逐篇审批。我们的材料、污染物、氧化剂、工况和同步性能配对遵循本项目科学规则。
+
+3. Rayyan：批量匹配附件与可见的筛选范围
+公开可证事实：新增题录和给已有题录附加PDF是两种操作；支持批量匹配。官方还明确说明，读到的第一个DOI可能来自参考文献而产生错误题录。[B3] 搜索与筛选共同生效，当前筛选条件可清除而不删除数据。[B4]
+适配决定：附件导入拆成论文身份、附件归属、正文/SI角色、异常确认四层。只因题名/DOI匹配不能宣称角色也正确；对身份使用首页标题、作者、主DOI和已有WoS题录交叉核验。列表常驻当前筛选条件、筛选后数量与选中数量，批量操作只针对明确选中范围。
+边界：Rayyan的PDF匹配不等于已经解决原生Word SI、多SI或合并文件中的科研角色识别。后者仍需本项目实施验证。
+
+4. Zotero：论文作为父对象，附件挂在论文下面
+公开可证事实：Zotero区分文献条目和附件，PDF识别可以建立父条目；未识别文件可保留未归属状态。[B5] 官方另有Web与桌面功能区别说明。[B6]
+适配决定：文献库主行是论文，展开后显示正文、SI 1、SI 2和其他附件。页面展示标签与原始文件名分别保存；同一文件多处出现不自动算成多篇论文。不照搬自动改名或删除原件的文件管理方式。
+边界：这里只借鉴信息层级；没有证据说明Zotero Web可直接完成我们的Windows目录导入或科研角色分类。
+
+5. Google Notebook：先限定来源，再问答和打开引用
+公开可证事实：本次打开的官方帮助标题为“Use chat in Gemini Notebook”；其中说明可以选择回答所用来源，预览引用并打开上下文，保存笔记可保留引用。[B7]
+适配决定：问答输入框附近持续显示当前来源范围；从论文列表选择数篇后可直接提问。点击证据进入原文，同时保留问题。保存研究问答时保存所用记录版本，不能把旧回答当作新文献证据。
+边界：只学习来源选择和引用交互，不迁移其模型或实验性代理功能。我们的问答默认只读已选记录，发现疑点走独立回查流程。
+
+6. Consensus：让答案的支持证据可展开
+公开可证事实：官方说明包含引用原文预览、全文与仅摘要使用范围标记，以及结论—证据表。[B8] 另有从文献库、集合或所选论文启动问答的说明。[B9]
+适配决定：比较回答采用材料—实验条件—指标—证据表；引用显示正文、SI或仅摘要等实际范围，不用绿色勾暗示已科学验证。用户可选中某一结论提出疑似错误，而不是用整段回答的点赞代替字段核查。
+边界：不用赞成/反对比例给材料性能排名。性能比较仍需核对指标、时间、面积、采样相、同步运行和数值配对。
+
+三、相对原规划的具体变化
+
+1. 文献导入不再只给一个笼统“识别成功”，分开显示论文身份匹配、附件归属、正文/SI角色和异常项。
+2. 文献列表以论文为主行、附件为展开子项；附件显示标签不改变物理文件名。
+3. 文献库和结果表保留筛选条件、选中项和返回位置，批量操作显示确切范围。
+4. 结果页增加按实验展开的表格视图；关键单元格可直接查看证据，不必先进入人工审核任务。
+5. 人工抽查默认两个主面板，收起额外导航；引入主题分组和自动保存草稿提示，避免原文被挤成缩略图。
+6. 普通确认可以“确认所选范围并下一项”；未报告、冲突和无法判断保留独立动作，不用缺少数据的空表单催人补值。
+7. 问答与文献列表打通选择范围；证据标注实际来源类型，保存答案时保留数据版本。
+8. 以下仍是我们的特定研究/工程设计，并无本次竞品调研证明它们能直接替代：正文/SI内容角色自动识别、同体系J与数值配对P、Word原生定位、少量抽查政策、JSON到Neo4j的版本一致性与切换、原130篇开发路径分析。
+
+四、后续验证安排
+
+下一步实现时，先按这些参考形成低保真页面与实际任务脚本，再用已有开发文献核对：从论文列表找到SI、从结果定位图表、确认一个性能对、标记一项未报告、修正一个实验归属、查看同步状态、从答案返回证据。
+这里只提出后续验证路径，本次不制作网页或原型。不能因为竞品采用某布局，就认定已经适合本项目；仍需以用户少量核查能否顺利完成为准。
+不以购买任何产品为前提。参考交互与任务组织，不复制品牌、页面素材或其领域本体。
+
+五、官方来源
+
+[B1] Elicit — Systematic Reviews in Elicit
+https://support.elicit.com/en/articles/14759154-systematic-reviews-in-elicit
+
+[B2] Covidence — Overview of Extraction 1（含本次视觉查看的公开示例）
+https://support.covidence.org/help/overview-of-extraction-1
+
+[B3] Rayyan — How to Add and Manage Full-Text PDFs in Rayyan
+https://help.rayyan.ai/hc/en-us/articles/4406419375249-How-to-Add-and-Manage-Full-Text-PDFs-in-Rayyan
+
+[B4] Rayyan — How to Filter, Search, and Sort References in Rayyan
+https://help.rayyan.ai/hc/en-us/articles/45737285564561-How-to-Filter-Search-and-Sort-References-in-Rayyan
+
+[B5] Zotero — Adding Files to your Zotero Library
+https://www.zotero.org/support/attaching_files
+
+[B6] Zotero — Is the Zotero web library the same as the Zotero desktop app?
+https://www.zotero.org/support/kb/web_vs_desktop
+
+[B7] Google — Use chat in Gemini Notebook
+https://support.google.com/gemininotebook/answer/16179559?hl=en
+
+[B8] Consensus — AI Analysis, Citations, and Visuals
+https://help.consensus.app/en/articles/17234045-consensus-ai-analysis-citations-and-visuals
+
+[B9] Consensus — How to Chat With Full Text
+https://help.consensus.app/en/articles/10068241-how-to-chat-with-full-text
+
+对应完整修订规划：D:\new_WaterTreatment\docs\web-workbench-plan-20261112-v1.1.txt
+原规划保留：D:\new_WaterTreatment\docs\web-workbench-plan-20261112.txt
